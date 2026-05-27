@@ -1,0 +1,35 @@
+# Dependencias
+node_modules/
+
+# Archivos de entorno
+
+
+# Build
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporales
+*.tmp
+.cache/
+.temp/
+
+# Lock files (opcional - puedes dejar package-lock.json si quieres)
+# package-lock.json
+# yarn.lock

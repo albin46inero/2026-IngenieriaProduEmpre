@@ -1,0 +1,99 @@
+:root {
+  --primary: #1a365d;
+  --primary-light: #2c5282;
+  --secondary: #2f855a;
+  --accent: #f6ad55;
+  --bg-light: #f7fafc;
+  --text-dark: #2d3748;
+  --text-light: #718096;
+  --white: #ffffff;
+  --serif: 'Playfair Display', serif;
+  --sans: 'Inter', sans-serif;
+  --container-max: 1200px;
+  --transition: all 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--sans);
+  color: var(--text-dark);
+  background-color: var(--white);
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  line-height: 1.2;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+}
+
+ul {
+  list-style: none;
+}
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+section {
+  padding: 5rem 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+.grid {
+  display: grid;
+  gap: 2rem;
+}
