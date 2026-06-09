@@ -298,11 +298,11 @@ export default function ComunicadosPage() {
         {/* ==================== COMUNICADOS OFICIALES ==================== */}
      <section id="comunicados-content" style={{
   padding: '6rem 0',
-  background: `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`,  // ← CAMBIO AQUÍ
+  background: `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`,
   position: 'relative',
   overflow: 'hidden',
-  borderTop: `3px solid rgba(255,255,255,0.4)`,   // ← NUEVO
-  borderBottom: `3px solid rgba(255,255,255,0.4)`  // ← NUEVO
+  borderTop: `3px solid rgba(255,255,255,0.4)`,
+  borderBottom: `3px solid rgba(255,255,255,0.4)`
 }}>
           {/* Gradientes de fondo */}
           
@@ -542,11 +542,11 @@ export default function ComunicadosPage() {
                         </div>
                       )}
 
-                      {/* Botón Ver Detalles */}
+                      {/* Botón Ver Detalles - ✅ CORREGIDO */}
                       <a 
                         href={comunicado.enlace || '#'}
                         target={comunicado.enlace?.includes('http') ? '_blank' : '_self'}
-                        rel="noopener noreferrer"
+                        rel={comunicado.enlace?.includes('http') ? 'noopener noreferrer' : undefined}
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',

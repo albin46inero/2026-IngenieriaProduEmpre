@@ -9,6 +9,29 @@ export default function SeminariosPage() {
   const [filtroActivo, setFiltroActivo] = useState('TODOS');
   const [seminarioModal, setSeminarioModal] = useState<any>(null);
 
+  // ✅ Validación segura de URLs
+  const esUrlSegura = (url: string): boolean => {
+    try {
+      const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
+      const dominiosPermitidos = [
+        'wa.me',
+        'chat.whatsapp.com',
+        'web.whatsapp.com',
+        'facebook.com',
+        'www.facebook.com',
+        'instagram.com',
+        'www.instagram.com',
+        'upea.bo',
+        'www.upea.bo'
+      ];
+      return dominiosPermitidos.some(
+        dominio => urlObj.hostname === dominio || urlObj.hostname.endsWith(`.${dominio}`)
+      );
+    } catch {
+      return false;
+    }
+  };
+
   // ✅ Colores dinámicos del servicio
   const primary = institucion?.colorinstitucion?.[0]?.color_primario || '#349433';
   const secondary = institucion?.colorinstitucion?.[0]?.color_secundario || '#00B9D1';
@@ -274,11 +297,11 @@ export default function SeminariosPage() {
         {/* ==================== SEMINARIOS ==================== */}
      <section id="seminarios-content" style={{
   padding: '6rem 0',
-  background: `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`,  // ← CAMBIO AQUÍ
+  background: `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`,
   position: 'relative',
   overflow: 'hidden',
-  borderTop: `3px solid rgba(255,255,255,0.4)`,   // ← NUEVO
-  borderBottom: `3px solid rgba(255,255,255,0.4)`  // ← NUEVO
+  borderTop: `3px solid rgba(255,255,255,0.4)`,
+  borderBottom: `3px solid rgba(255,255,255,0.4)`
 }}>
           {/* Gradientes de fondo */}
         
@@ -722,7 +745,7 @@ export default function SeminariosPage() {
                     />
                   </div>
 
-                  {/* WhatsApp si existe */}
+                  {/* WhatsApp si existe - ✅ CORREGIDO */}
                   {seminarioModal.det_grupo_whatssap && (
                     <div style={{
                       padding: '1.5rem',
@@ -735,9 +758,19 @@ export default function SeminariosPage() {
                         📱 ¿Tienes consultas?
                       </p>
                       <a 
-                        href={seminarioModal.det_grupo_whatssap.startsWith('http') ? seminarioModal.det_grupo_whatssap : `https://${seminarioModal.det_grupo_whatssap}`}
+                        href={esUrlSegura(seminarioModal.det_grupo_whatssap) 
+                          ? (seminarioModal.det_grupo_whatssap.startsWith('http') 
+                              ? seminarioModal.det_grupo_whatssap 
+                              : `https://${seminarioModal.det_grupo_whatssap}`)
+                          : '#'}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => {
+                          if (!esUrlSegura(seminarioModal.det_grupo_whatssap)) {
+                            e.preventDefault();
+                            alert('URL no válida o no permitida');
+                          }
+                        }}
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',

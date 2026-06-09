@@ -6,16 +6,24 @@ interface HeaderProps {
 }
 
 // =============================================
-// CONFIGURACIÓN - SOLO DESDE .env
+// CONFIGURACIÓN - VARIABLES DE ENTORNO OBLIGATORIAS
 // =============================================
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://apiadministrador.upea.bo';
-const SERVICIO_URL = import.meta.env.VITE_SERVICIO_URL || 'https://servicioadministrador.upea.bo/sign-in';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const SERVICIO_URL = import.meta.env.VITE_SERVICIO_URL;
+
+// Validar que las variables de entorno estén configuradas
+if (!API_BASE_URL) {
+  console.error('❌ Error: VITE_API_BASE_URL no está configurada en el archivo .env');
+}
+if (!SERVICIO_URL) {
+  console.error('❌ Error: VITE_SERVICIO_URL no está configurada en el archivo .env');
+}
 
 // =============================================
 // UTILIDAD: Construir URL del logo
 // =============================================
 const buildLogoUrl = (logoPath: string | null | undefined): string => {
-  if (!logoPath) return '';
+  if (!logoPath || !API_BASE_URL) return '';
   const cleanPath = logoPath.trim();
   if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) return cleanPath;
   if (cleanPath.startsWith('/storage/')) return `${API_BASE_URL}${cleanPath}`;
@@ -110,8 +118,8 @@ export default function Header({ data }: HeaderProps) {
           0%, 45% { opacity: 1; transform: scale(1); }
           50%, 100% { opacity: 0; transform: scale(0.92); }
         }
-        .header-transparent { transition: all 0.3s ease; }
-        .header-transparent.scrolled { background: rgba(0,0,0,0.95) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .header-solid { transition: all 0.3s ease; }
+        .header-solid.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .nav-link-hover:hover { background: rgba(255,255,255,0.15) !important; transform: translateY(-2px); }
         .dropdown-item-hover:hover { background: rgba(255,255,255,0.1) !important; padding-left: 1.5rem !important; color: ${colors.secondary} !important; }
         .btn-login-hover:hover { transform: translateY(-3px) !important; box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important; }
@@ -132,22 +140,21 @@ export default function Header({ data }: HeaderProps) {
         @media (min-width: 1025px) { .mobile-toggle { display: none !important; } .mobile-nav { display: none !important; } }
       `}</style>
 
-      {/* Header con fondo transparente que cambia al scroll */}
+      {/* Header con fondo sólido de la institución */}
       <header 
-        className={`header-transparent ${scrolled ? 'scrolled' : ''}`}
+        className={`header-solid ${scrolled ? 'scrolled' : ''}`}
         style={{
           position: 'fixed',
           top: 0,
           left: 0,
           right: 0,
           zIndex: 1000,
-          background: scrolled 
-            ? `linear-gradient(135deg, ${colors.primary}dd 0%, ${colors.secondary}cc 100%)` 
-            : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'blur(10px)',
-          borderBottom: scrolled ? 'none' : `2px solid rgba(255,255,255,0.2)`,
+          background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
+          backdropFilter: 'blur(10px)',
+          borderBottom: `2px solid rgba(255,255,255,0.2)`,
           padding: scrolled ? '0.75rem 0' : '1rem 0',
-          transition: 'all 0.3s ease'
+          transition: 'all 0.3s ease',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
         }}
       >
         <div style={{
@@ -166,7 +173,7 @@ export default function Header({ data }: HeaderProps) {
             alignItems: 'center', 
             gap: '1rem', 
             animation: 'fadeIn 0.5s ease',
-            marginRight: 'auto'  // ✅ Empuja el resto a la derecha
+            marginRight: 'auto'
           }}>
             {logoUrl && (
               <div style={{
@@ -203,7 +210,7 @@ export default function Header({ data }: HeaderProps) {
               </h1>
               <span style={{
                 fontSize: '0.8rem',
-                color: scrolled ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.95)',
+                color: 'rgba(255,255,255,0.9)',
                 fontWeight: 500,
                 letterSpacing: '2px',
                 textTransform: 'uppercase'
@@ -218,7 +225,7 @@ export default function Header({ data }: HeaderProps) {
             display: 'flex', 
             alignItems: 'center', 
             gap: '0.5rem',
-            marginLeft: 'auto'  // ✅ Empuja el menú a la derecha
+            marginLeft: 'auto'
           }}>
             <ul style={{ 
               display: 'flex', 
@@ -287,7 +294,7 @@ export default function Header({ data }: HeaderProps) {
                     top: '100%',
                     left: 0,
                     minWidth: '240px',
-                    background: scrolled ? `rgba(0,0,0,0.95)` : `rgba(0,0,0,0.9)`,
+                    background: `rgba(0,0,0,0.95)`,
                     backdropFilter: 'blur(15px)',
                     borderRadius: '12px',
                     boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
@@ -328,7 +335,7 @@ export default function Header({ data }: HeaderProps) {
               {/* ✅ BOTÓN LOGIN - REDIRECCIÓN AL SERVICIO */}
               <li>
                 <a 
-                  href={SERVICIO_URL}
+                  href={SERVICIO_URL || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-login-hover square-font"
@@ -406,7 +413,7 @@ export default function Header({ data }: HeaderProps) {
             top: '100%',
             left: 0,
             right: 0,
-            background: `linear-gradient(135deg, ${colors.primary}f5 0%, ${colors.secondary}f0 100%)`,
+            background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
             backdropFilter: 'blur(20px)',
             padding: '1.5rem 2rem',
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
@@ -489,7 +496,7 @@ export default function Header({ data }: HeaderProps) {
             {/* ✅ BOTÓN LOGIN MOBILE - REDIRECCIÓN AL SERVICIO */}
             <li style={{ paddingTop: '1rem' }}>
               <a 
-                href={SERVICIO_URL}
+                href={SERVICIO_URL || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={closeMobileMenu}

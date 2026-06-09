@@ -51,10 +51,16 @@ export default function VideosPage() {
     );
   }
 
-  // ✅ Helper para URLs de imágenes
+  // ✅ Helper para URLs de imágenes - CORREGIDO para evitar Mixed Content
   const getImageUrl = (path: string | null | undefined): string => {
     if (!path) return '';
-    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    
+    // ✅ Forzar HTTPS para evitar Mixed Content y ataques MitM
+    if (path.startsWith('http://')) {
+      return path.replace('http://', 'https://');
+    }
+    if (path.startsWith('https://')) return path;
+    
     return `https://archivosminio.upea.bo/archivospaginasnode/imagenes/${path}`;
   };
 
@@ -240,11 +246,11 @@ export default function VideosPage() {
         {/* ==================== VIDEOS ==================== */}
        <section id="videos-content" style={{
   padding: '6rem 0',
-  background: `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`,  // ← CAMBIO AQUÍ
+  background: `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`,
   position: 'relative',
   overflow: 'hidden',
-  borderTop: `3px solid rgba(255,255,255,0.4)`,   // ← NUEVO
-  borderBottom: `3px solid rgba(255,255,255,0.4)`  // ← NUEVO
+  borderTop: `3px solid rgba(255,255,255,0.4)`,
+  borderBottom: `3px solid rgba(255,255,255,0.4)`
 }}>
           {/* Gradientes de fondo con colores dinámicos */}
         

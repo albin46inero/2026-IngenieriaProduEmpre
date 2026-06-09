@@ -7,6 +7,29 @@ export default function AutoridadesPage() {
   const { institucion, contenido, loading, error } = useCarreraData();
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // ✅ Validación segura de URLs
+  const esUrlSegura = (url: string): boolean => {
+    try {
+      const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
+      const dominiosPermitidos = [
+        'wa.me',
+        'chat.whatsapp.com',
+        'web.whatsapp.com',
+        'facebook.com',
+        'www.facebook.com',
+        'instagram.com',
+        'www.instagram.com',
+        'upea.bo',
+        'www.upea.bo'
+      ];
+      return dominiosPermitidos.some(
+        dominio => urlObj.hostname === dominio || urlObj.hostname.endsWith(`.${dominio}`)
+      );
+    } catch {
+      return false;
+    }
+  };
+
   // ✅ Colores dinámicos del servicio
   const primary = institucion?.colorinstitucion?.[0]?.color_primario || '#349433';
   const secondary = institucion?.colorinstitucion?.[0]?.color_secundario || '#00B9D1';
@@ -41,10 +64,16 @@ export default function AutoridadesPage() {
     );
   }
 
-  // ✅ Helper para URLs de imágenes
+  // ✅ Helper para URLs de imágenes - CORREGIDO para evitar Mixed Content
   const getImageUrl = (path: string | null | undefined): string => {
     if (!path) return '';
-    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    
+    // ✅ Forzar HTTPS para evitar Mixed Content y ataques MitM
+    if (path.startsWith('http://')) {
+      return path.replace('http://', 'https://');
+    }
+    if (path.startsWith('https://')) return path;
+    
     return `https://archivosminio.upea.bo/archivospaginasnode/imagenes/${path}`;
   };
 
@@ -283,7 +312,8 @@ export default function AutoridadesPage() {
                       animation: `fadeInUp 0.6s ease-out ${idx * 0.15}s both`,
                       display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      position: 'relative'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-12px) scale(1.02)';
@@ -383,12 +413,28 @@ export default function AutoridadesPage() {
                         </a>
                       )}
                       {auth.facebook_autoridad && auth.facebook_autoridad !== 'qweqwe' && auth.facebook_autoridad !== 'qwe' && (
-                        <a href={auth.facebook_autoridad.startsWith('http') ? auth.facebook_autoridad : `https://facebook.com/${auth.facebook_autoridad}`} target="_blank" rel="noopener noreferrer" style={{ 
-                          display: 'flex', alignItems: 'center', gap: '0.5rem', 
-                          color: '#000', textDecoration: 'none', fontWeight: 500,
-                          transition: 'color 0.2s ease'
-                        }} onMouseEnter={(e) => e.currentTarget.style.color = accentColor}
-                           onMouseLeave={(e) => e.currentTarget.style.color = '#000'}>
+                        <a 
+                          href={esUrlSegura(auth.facebook_autoridad) 
+                            ? (auth.facebook_autoridad.startsWith('http') 
+                                ? auth.facebook_autoridad 
+                                : `https://facebook.com/${auth.facebook_autoridad}`)
+                            : '#'}
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          onClick={(e) => {
+                            if (!esUrlSegura(auth.facebook_autoridad)) {
+                              e.preventDefault();
+                              alert('URL no válida o no permitida');
+                            }
+                          }}
+                          style={{ 
+                            display: 'flex', alignItems: 'center', gap: '0.5rem', 
+                            color: '#000', textDecoration: 'none', fontWeight: 500,
+                            transition: 'color 0.2s ease'
+                          }} 
+                          onMouseEnter={(e) => e.currentTarget.style.color = accentColor}
+                          onMouseLeave={(e) => e.currentTarget.style.color = '#000'}
+                        >
                           <span>🌐</span>
                           <span>Facebook</span>
                         </a>
