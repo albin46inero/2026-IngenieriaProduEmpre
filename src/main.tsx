@@ -28,7 +28,7 @@ function Router() {
   React.useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') || 'home';
-      console.log('🔄 Ruta cambiada a:', hash); // Debug
+     
       setRoute(hash);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -40,7 +40,7 @@ function Router() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  console.log('📍 Ruta actual:', route); // Debug
+
 
   // ✅ Routing con switch (más limpio)
   switch (route) {

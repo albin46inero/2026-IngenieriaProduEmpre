@@ -182,10 +182,10 @@ export default function CursosPage() {
     }
   `}</style>
 
-  {/* 🖼️ PORTADAS - AQUÍ ESTÁN LAS IMÁGENES REALES */}
+  
   {contenido?.portada && contenido.portada.length > 0 && contenido.portada.map((portada, index) => {
     const isActive = index === currentSlide;
-    console.log('🔍 Portada', index, ':', portada.portada_imagen, 'Activa:', isActive);
+    
     
     return (
       <div 

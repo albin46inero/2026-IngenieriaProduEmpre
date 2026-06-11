@@ -10,7 +10,6 @@ export default function GacetaPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [yearFilter, setYearFilter] = useState<number | 'TODOS'>('TODOS');
 
-  // ✅ Colores dinámicos del servicio
   const primary = institucion?.colorinstitucion?.[0]?.color_primario || '#349433';
   const secondary = institucion?.colorinstitucion?.[0]?.color_secundario || '#00B9D1';
 
@@ -73,6 +72,11 @@ export default function GacetaPage() {
     .filter(gac => gac.gaceta_documento)
     .sort((a, b) => new Date(b.gaceta_fecha).getTime() - new Date(a.gaceta_fecha).getTime());
 
+  // DEBUG - Ver datos crudos
+  console.log('📊 Total de gacetas recibidas:', gacetas.length);
+  console.log('📊 Datos crudos de gacetas:', gacetas);
+  console.log('📊 Recursos completos:', recursos);
+
   // Obtener años únicos
   const añosDisponibles = Array.from(new Set(
     gacetas.map(g => new Date(g.gaceta_fecha).getFullYear())
@@ -86,6 +90,10 @@ export default function GacetaPage() {
     const coincideAño = yearFilter === 'TODOS' || new Date(gac.gaceta_fecha).getFullYear() === yearFilter;
     return coincideBusqueda && coincideAño;
   });
+
+  // DEBUG - Ver gacetas filtradas
+  console.log('🔍 Gacetas filtradas:', gacetasFiltradas.length);
+  console.log('🔍 Datos filtrados:', gacetasFiltradas);
 
   const formatearFecha = (fecha: string) => {
     return new Date(fecha).toLocaleDateString('es-BO', {
@@ -104,34 +112,34 @@ export default function GacetaPage() {
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        @keyframes shine {
-          0% { background-position: -200% center; }
-          100% { background-position: 200% center; }
+        @keyframes rotate3D { 
+          0% { transform: perspective(1000px) rotateY(0deg); } 
+          100% { transform: perspective(1000px) rotateY(360deg); } 
+        }
+        @keyframes letterBlink {
+          0%, 45% { opacity: 1; transform: scale(1); }
+          50%, 100% { opacity: 0; transform: scale(0.92); }
+        }
+        .square-font {
+          font-family: 'Courier New', monospace, 'Segoe UI', sans-serif;
+          font-weight: 900;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+        .letter-animate {
+          display: inline-block;
+          animation: letterBlink 2.8s ease-in-out infinite;
+          animation-delay: calc(var(--i) * 0.06s);
         }
         .doc-card {
-          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .doc-card:hover {
-          transform: translateY(-12px) scale(1.02);
-        }
-        .doc-card:hover .doc-cover {
-          transform: rotateY(-15deg) scale(1.05);
-        }
-        .doc-cover {
-          transition: transform 0.5s ease;
-          transform-style: preserve-3d;
-        }
-        .year-pill {
           transition: all 0.3s ease;
         }
-        .year-pill:hover {
-          transform: translateY(-2px);
+        .doc-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 12px 30px rgba(0,0,0,0.15);
         }
         @media (max-width: 768px) { 
           .gaceta-grid { grid-template-columns: 1fr !important; }
-          .gaceta-search { width: 100% !important; }
-          .years-container { justify-content: flex-start !important; }
         }
       `}</style>
 
@@ -148,28 +156,6 @@ export default function GacetaPage() {
           paddingTop: '80px',
           overflow: 'hidden'
         }}>
-          <style>{`
-            @keyframes rotate3D { 
-              0% { transform: perspective(1000px) rotateY(0deg); } 
-              100% { transform: perspective(1000px) rotateY(360deg); } 
-            }
-            @keyframes letterBlink {
-              0%, 45% { opacity: 1; transform: scale(1); }
-              50%, 100% { opacity: 0; transform: scale(0.92); }
-            }
-            .square-font {
-              font-family: 'Courier New', monospace, 'Segoe UI', sans-serif;
-              font-weight: 900;
-              letter-spacing: 2px;
-              text-transform: uppercase;
-            }
-            .letter-animate {
-              display: inline-block;
-              animation: letterBlink 2.8s ease-in-out infinite;
-              animation-delay: calc(var(--i) * 0.06s);
-            }
-          `}</style>
-
           {contenido?.portada && contenido.portada.length > 0 && contenido.portada.map((portada, index) => {
             const isActive = index === currentSlide;
             return (
@@ -267,52 +253,15 @@ export default function GacetaPage() {
           position: 'relative',
           overflow: 'hidden'
         }}>
-          {/* Decoración de fondo */}
-          <div style={{
-            position: 'absolute',
-            top: '10%',
-            right: '5%',
-            fontSize: '20rem',
-            opacity: 0.03,
-            color: primary,
-            pointerEvents: 'none'
-          }}>📚</div>
-          <div style={{
-            position: 'absolute',
-            bottom: '10%',
-            left: '5%',
-            fontSize: '15rem',
-            opacity: 0.03,
-            color: secondary,
-            pointerEvents: 'none'
-          }}>📄</div>
-
           <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 1 }}>
             
             {/* Header */}
             <div style={{ textAlign: 'center', marginBottom: '3rem', animation: 'fadeInUp 0.6s ease-out' }}>
-              <span style={{
-                display: 'inline-block',
-                padding: '0.5rem 1.5rem',
-                background: `linear-gradient(135deg, ${primary}, ${secondary})`,
-                color: '#fff',
-                borderRadius: '50px',
-                fontSize: '0.85rem',
-                fontWeight: 700,
-                marginBottom: '1rem',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                boxShadow: `0 4px 15px ${primary}40`
-              }}>
-                📚 Archivo Institucional
-              </span>
               <h2 style={{ 
                 fontSize: 'clamp(2rem, 5vw, 3.5rem)', 
                 color: '#1e293b', 
                 fontWeight: 900, 
-                letterSpacing: '-0.02em',
-                marginBottom: '1rem',
-                lineHeight: 1.2
+                marginBottom: '1rem'
               }}>
                 Gacetas <span style={{ 
                   background: `linear-gradient(135deg, ${primary}, ${secondary})`,
@@ -328,9 +277,6 @@ export default function GacetaPage() {
                 margin: '0 auto 1.5rem', 
                 borderRadius: '2px' 
               }}></div>
-              <p style={{ color: '#64748b', fontSize: '1.15rem', maxWidth: '600px', margin: '0 auto' }}>
-                Consulta el archivo oficial de publicaciones institucionales
-              </p>
             </div>
 
             {/* Panel de filtros */}
@@ -339,21 +285,15 @@ export default function GacetaPage() {
               borderRadius: '20px',
               padding: '2rem',
               marginBottom: '3rem',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
-              border: '1px solid rgba(0,0,0,0.05)'
+              boxShadow: '0 4px 20px rgba(0,0,0,0.06)'
             }}>
               {/* Barra de búsqueda */}
-              <div style={{ 
-                maxWidth: '700px', 
-                margin: '0 auto 1.5rem',
-                position: 'relative'
-              }}>
+              <div style={{ maxWidth: '700px', margin: '0 auto 1.5rem', position: 'relative' }}>
                 <input
                   type="text"
-                  placeholder="Buscar por título o tipo de gaceta..."
+                  placeholder="🔍 Buscar por título o tipo..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="gaceta-search"
                   style={{
                     width: '100%',
                     padding: '1rem 1.5rem 1rem 3.5rem',
@@ -361,63 +301,32 @@ export default function GacetaPage() {
                     border: '2px solid #e2e8f0',
                     borderRadius: '50px',
                     background: '#f8fafc',
-                    color: '#1e293b',
-                    outline: 'none',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = primary;
-                    e.currentTarget.style.background = '#fff';
-                    e.currentTarget.style.boxShadow = `0 0 0 4px ${primary}15`;
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = '#e2e8f0';
-                    e.currentTarget.style.background = '#f8fafc';
-                    e.currentTarget.style.boxShadow = 'none';
+                    outline: 'none'
                   }}
                 />
-                <span style={{
-                  position: 'absolute',
-                  left: '1.25rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  fontSize: '1.2rem',
-                  opacity: 0.5
-                }}>🔍</span>
               </div>
 
               {/* Filtros por año */}
               {añosDisponibles.length > 0 && (
-                <div className="years-container" style={{
+                <div style={{
                   display: 'flex',
                   flexWrap: 'wrap',
                   gap: '0.5rem',
-                  justifyContent: 'center',
-                  alignItems: 'center'
+                  justifyContent: 'center'
                 }}>
-                  <span style={{ 
-                    color: '#64748b', 
-                    fontSize: '0.9rem', 
-                    fontWeight: 600,
-                    marginRight: '0.5rem'
-                  }}>
-                    📅 Filtrar por año:
+                  <span style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: 600 }}>
+                     Filtrar por año:
                   </span>
                   <button
                     onClick={() => setYearFilter('TODOS')}
-                    className="year-pill"
                     style={{
                       padding: '0.5rem 1.25rem',
-                      background: yearFilter === 'TODOS' 
-                        ? `linear-gradient(135deg, ${primary}, ${secondary})`
-                        : '#f1f5f9',
+                      background: yearFilter === 'TODOS' ? `linear-gradient(135deg, ${primary}, ${secondary})` : '#f1f5f9',
                       color: yearFilter === 'TODOS' ? '#fff' : '#475569',
                       border: 'none',
                       borderRadius: '50px',
                       fontWeight: 700,
-                      fontSize: '0.85rem',
-                      cursor: 'pointer',
-                      boxShadow: yearFilter === 'TODOS' ? `0 4px 12px ${primary}40` : 'none'
+                      cursor: 'pointer'
                     }}
                   >
                     Todos
@@ -426,19 +335,14 @@ export default function GacetaPage() {
                     <button
                       key={year}
                       onClick={() => setYearFilter(year)}
-                      className="year-pill"
                       style={{
                         padding: '0.5rem 1.25rem',
-                        background: yearFilter === year 
-                          ? `linear-gradient(135deg, ${primary}, ${secondary})`
-                          : '#f1f5f9',
+                        background: yearFilter === year ? `linear-gradient(135deg, ${primary}, ${secondary})` : '#f1f5f9',
                         color: yearFilter === year ? '#fff' : '#475569',
                         border: 'none',
                         borderRadius: '50px',
                         fontWeight: 700,
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                        boxShadow: yearFilter === year ? `0 4px 12px ${primary}40` : 'none'
+                        cursor: 'pointer'
                       }}
                     >
                       {year}
@@ -448,91 +352,36 @@ export default function GacetaPage() {
               )}
             </div>
 
-            {/* Estadísticas */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '1rem',
-              marginBottom: '3rem'
-            }}>
-              <div style={{
-                background: '#fff',
-                padding: '1.5rem',
-                borderRadius: '16px',
-                textAlign: 'center',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
-                border: '1px solid rgba(0,0,0,0.05)'
-              }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📄</div>
-                <div style={{ fontSize: '2rem', fontWeight: 900, color: primary, lineHeight: 1 }}>
-                  {gacetas.length}
-                </div>
-                <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, marginTop: '0.25rem' }}>
-                  Total de Gacetas
-                </div>
-              </div>
-              <div style={{
-                background: '#fff',
-                padding: '1.5rem',
-                borderRadius: '16px',
-                textAlign: 'center',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
-                border: '1px solid rgba(0,0,0,0.05)'
-              }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📅</div>
-                <div style={{ fontSize: '2rem', fontWeight: 900, color: secondary, lineHeight: 1 }}>
-                  {añosDisponibles.length}
-                </div>
-                <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, marginTop: '0.25rem' }}>
-                  Años con Registros
-                </div>
-              </div>
-              <div style={{
-                background: '#fff',
-                padding: '1.5rem',
-                borderRadius: '16px',
-                textAlign: 'center',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.04)',
-                border: '1px solid rgba(0,0,0,0.05)'
-              }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔍</div>
-                <div style={{ fontSize: '2rem', fontWeight: 900, color: '#FFD700', lineHeight: 1 }}>
-                  {gacetasFiltradas.length}
-                </div>
-                <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, marginTop: '0.25rem' }}>
-                  Resultados Actuales
-                </div>
-              </div>
-            </div>
+           
 
             {gacetasFiltradas.length > 0 ? (
               <>
-                {/* Grid de Gacetas tipo Documentos */}
+                {/* Grid de Gacetas - DISEÑO SIMPLIFICADO PARA DEBUG */}
                 <div className="gaceta-grid" style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
                   gap: '2rem'
                 }}>
-                  {gacetasFiltradas.map((gaceta, idx) => (
-                    <div 
-                      key={gaceta.gaceta_id}
-                      className="doc-card"
-                      style={{
-                        background: '#fff',
-                        borderRadius: '20px',
-                        overflow: 'hidden',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                        cursor: 'pointer',
-                        animation: `slideUp 0.5s ease-out ${idx * 0.05}s both`,
-                        border: '1px solid rgba(0,0,0,0.05)',
-                        perspective: '1000px'
-                      }}
-                      onClick={() => setSelectedPdf(gaceta)}
-                    >
-                      {/* Portada del documento */}
+                  {gacetasFiltradas.map((gaceta, idx) => {
+                    console.log(`📄 [${idx}] Renderizando gaceta:`, gaceta);
+                    
+                    return (
                       <div 
-                        className="doc-cover"
+                        key={gaceta.gaceta_id || idx}
+                        className="doc-card"
+                        onClick={() => setSelectedPdf(gaceta)}
                         style={{
+                          background: '#fff',
+                          borderRadius: '20px',
+                          overflow: 'hidden',
+                          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                          cursor: 'pointer',
+                          border: '3px solid #ef4444',
+                          animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`
+                        }}
+                      >
+                        {/* Portada */}
+                        <div style={{
                           height: '200px',
                           background: `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`,
                           position: 'relative',
@@ -541,207 +390,104 @@ export default function GacetaPage() {
                           alignItems: 'center',
                           justifyContent: 'center',
                           padding: '1.5rem',
-                          overflow: 'hidden'
-                        }}
-                      >
-                        {/* Decoración de fondo */}
-                        <div style={{
-                          position: 'absolute',
-                          top: '-20px',
-                          right: '-20px',
-                          width: '150px',
-                          height: '150px',
-                          background: 'rgba(255,255,255,0.1)',
-                          borderRadius: '50%'
-                        }}></div>
-                        <div style={{
-                          position: 'absolute',
-                          bottom: '-30px',
-                          left: '-30px',
-                          width: '120px',
-                          height: '120px',
-                          background: 'rgba(255,255,255,0.08)',
-                          borderRadius: '50%'
-                        }}></div>
-
-                        {/* Logo */}
-                        {institucion?.institucion_logo && (
-                          <div style={{
-                            width: '60px',
-                            height: '60px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginBottom: '0.75rem',
-                            boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-                            position: 'relative',
-                            zIndex: 1
-                          }}>
-                            <img 
-                              src={getImageUrl(institucion.institucion_logo)}
-                              alt="Logo"
-                              style={{ width: '80%', height: '80%', objectFit: 'contain' }}
-                            />
-                          </div>
-                        )}
-
-                        {/* Tipo de documento */}
-                        <div style={{
-                          background: 'rgba(255,255,255,0.25)',
-                          backdropFilter: 'blur(10px)',
-                          padding: '0.35rem 1rem',
-                          borderRadius: '50px',
-                          color: '#fff',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          letterSpacing: '1px',
-                          textTransform: 'uppercase',
-                          position: 'relative',
-                          zIndex: 1,
-                          border: '1px solid rgba(255,255,255,0.3)'
-                        }}>
-                          {gaceta.gaceta_tipo || 'GACETA'}
-                        </div>
-
-                        {/* Icono PDF grande */}
-                        <div style={{
-                          position: 'absolute',
-                          bottom: '1rem',
-                          right: '1rem',
-                          fontSize: '3rem',
-                          opacity: 0.3,
                           color: '#fff'
                         }}>
-                          📄
+                          <div style={{ fontSize: '4rem', marginBottom: '0.5rem' }}>📄</div>
+                          <div style={{
+                            background: 'rgba(255,255,255,0.25)',
+                            padding: '0.35rem 1rem',
+                            borderRadius: '50px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            textTransform: 'uppercase'
+                          }}>
+                            {gaceta.gaceta_tipo || 'GACETA'}
+                          </div>
+                          <div style={{
+                            position: 'absolute',
+                            top: '1rem',
+                            left: '1rem',
+                            background: 'rgba(0,0,0,0.4)',
+                            padding: '0.35rem 0.75rem',
+                            borderRadius: '50px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700
+                          }}>
+                            {getYearFromDate(gaceta.gaceta_fecha)}
+                          </div>
                         </div>
 
-                        {/* Año destacado */}
-                        <div style={{
-                          position: 'absolute',
-                          top: '1rem',
-                          left: '1rem',
-                          background: 'rgba(0,0,0,0.3)',
-                          backdropFilter: 'blur(10px)',
-                          padding: '0.35rem 0.75rem',
-                          borderRadius: '50px',
-                          color: '#fff',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          border: '1px solid rgba(255,255,255,0.2)'
-                        }}>
-                          {getYearFromDate(gaceta.gaceta_fecha)}
-                        </div>
-                      </div>
+                        {/* Contenido */}
+                        <div style={{ padding: '1.5rem' }}>
+                          <h3 style={{
+                            fontSize: '1.1rem',
+                            fontWeight: 700,
+                            color: '#1e293b',
+                            marginBottom: '0.75rem',
+                            lineHeight: 1.4,
+                            minHeight: '60px'
+                          }}>
+                            {gaceta.gaceta_titulo || 'Sin título'}
+                          </h3>
 
-                      {/* Contenido */}
-                      <div style={{ padding: '1.5rem' }}>
-                        <h3 style={{
-                          fontSize: '1rem',
-                          fontWeight: 700,
-                          color: '#1e293b',
-                          marginBottom: '0.75rem',
-                          lineHeight: 1.4,
-                          minHeight: '56px',
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden'
-                        }}>
-                          {gaceta.gaceta_titulo}
-                        </h3>
+                          <div style={{
+                            color: '#64748b',
+                            fontSize: '0.9rem',
+                            marginBottom: '1.25rem',
+                            paddingBottom: '1.25rem',
+                            borderBottom: '1px solid #e2e8f0'
+                          }}>
+                             {formatearFecha(gaceta.gaceta_fecha)}
+                          </div>
 
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          color: '#64748b',
-                          fontSize: '0.85rem',
-                          marginBottom: '1.25rem',
-                          paddingBottom: '1.25rem',
-                          borderBottom: '1px solid #e2e8f0'
-                        }}>
-                          <span>📅</span>
-                          <span style={{ fontWeight: 500 }}>
-                            {formatearFecha(gaceta.gaceta_fecha)}
-                          </span>
-                        </div>
-
-                        {/* Botones de acción */}
-                        <div style={{
-                          display: 'flex',
-                          gap: '0.5rem'
-                        }}>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedPdf(gaceta);
-                            }}
-                            style={{
-                              flex: 1,
-                              padding: '0.65rem',
-                              background: `linear-gradient(135deg, ${primary}, ${primary}dd)`,
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '8px',
-                              fontWeight: 700,
-                              fontSize: '0.8rem',
-                              cursor: 'pointer',
-                              transition: 'all 0.3s ease',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '0.35rem',
-                              boxShadow: `0 2px 8px ${primary}30`
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.transform = 'translateY(-2px)';
-                              e.currentTarget.style.boxShadow = `0 4px 12px ${primary}50`;
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.transform = 'translateY(0)';
-                              e.currentTarget.style.boxShadow = `0 2px 8px ${primary}30`;
-                            }}
-                          >
-                            👁️ Ver
-                          </button>
-                          <a
-                            href={getPdfUrl(gaceta.gaceta_documento)}
-                            download
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                              flex: 1,
-                              padding: '0.65rem',
-                              background: 'transparent',
-                              color: primary,
-                              border: `2px solid ${primary}`,
-                              borderRadius: '8px',
-                              fontWeight: 700,
-                              fontSize: '0.8rem',
-                              cursor: 'pointer',
-                              transition: 'all 0.3s ease',
-                              textDecoration: 'none',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '0.35rem'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = `${primary}10`;
-                              e.currentTarget.style.transform = 'translateY(-2px)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'transparent';
-                              e.currentTarget.style.transform = 'translateY(0)';
-                            }}
-                          >
-                            ⬇️ Bajar
-                          </a>
+                          {/* Botones */}
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedPdf(gaceta);
+                              }}
+                              style={{
+                                flex: 1,
+                                padding: '0.75rem',
+                                background: `linear-gradient(135deg, ${primary}, ${primary}dd)`,
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontWeight: 700,
+                                fontSize: '0.9rem',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Ver PDF
+                            </button>
+                            <a
+                              href={getPdfUrl(gaceta.gaceta_documento)}
+                              download
+                              onClick={(e) => e.stopPropagation()}
+                              style={{
+                                flex: 1,
+                                padding: '0.75rem',
+                                background: 'transparent',
+                                color: primary,
+                                border: `2px solid ${primary}`,
+                                borderRadius: '8px',
+                                fontWeight: 700,
+                                fontSize: '0.9rem',
+                                textDecoration: 'none',
+                                textAlign: 'center',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              Bajar
+                            </a>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             ) : (
@@ -749,22 +495,16 @@ export default function GacetaPage() {
                 textAlign: 'center',
                 padding: '5rem 2rem',
                 background: '#fff',
-                borderRadius: '20px',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+                borderRadius: '20px'
               }}>
-                <div style={{ 
-                  fontSize: '5rem', 
-                  marginBottom: '1.5rem', 
-                  opacity: 0.3,
-                  animation: 'float 3s ease-in-out infinite'
-                }}>📭</div>
-                <h3 style={{ fontSize: '1.5rem', color: '#1e293b', marginBottom: '0.75rem', fontWeight: 700 }}>
+                <div style={{ fontSize: '5rem', marginBottom: '1.5rem', opacity: 0.3 }}>📭</div>
+                <h3 style={{ fontSize: '1.5rem', color: '#1e293b', marginBottom: '0.75rem' }}>
                   {searchTerm || yearFilter !== 'TODOS' ? 'No se encontraron resultados' : 'No hay gacetas disponibles'}
                 </h3>
-                <p style={{ color: '#64748b', fontSize: '1rem', maxWidth: '400px', margin: '0 auto' }}>
+                <p style={{ color: '#64748b', fontSize: '1rem' }}>
                   {searchTerm || yearFilter !== 'TODOS' 
-                    ? 'Intenta ajustar los filtros o términos de búsqueda.' 
-                    : 'Pronto publicaremos nueva documentación oficial.'}
+                    ? 'Intenta ajustar los filtros.' 
+                    : 'Pronto publicaremos nueva documentación.'}
                 </p>
                 {(searchTerm || yearFilter !== 'TODOS') && (
                   <button
@@ -780,18 +520,17 @@ export default function GacetaPage() {
                       border: 'none',
                       borderRadius: '50px',
                       fontWeight: 700,
-                      cursor: 'pointer',
-                      boxShadow: `0 4px 15px ${primary}40`
+                      cursor: 'pointer'
                     }}
                   >
-                    🔄 Limpiar filtros
+                     Limpiar filtros
                   </button>
                 )}
               </div>
             )}
           </div>
 
-          {/* ==================== MODAL VISOR PDF PROFESIONAL ==================== */}
+          {/* ==================== MODAL VISOR PDF ==================== */}
           {selectedPdf && (
             <div 
               style={{
@@ -802,8 +541,7 @@ export default function GacetaPage() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '1rem',
-                animation: 'fadeIn 0.3s ease'
+                padding: '1rem'
               }}
               onClick={() => setSelectedPdf(null)}
             >
@@ -816,9 +554,7 @@ export default function GacetaPage() {
                   height: '92vh',
                   display: 'flex',
                   flexDirection: 'column',
-                  overflow: 'hidden',
-                  animation: 'slideUp 0.4s ease',
-                  boxShadow: '0 25px 80px rgba(0,0,0,0.5)'
+                  overflow: 'hidden'
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -829,51 +565,17 @@ export default function GacetaPage() {
                   justifyContent: 'space-between',
                   padding: '1rem 1.5rem',
                   background: `linear-gradient(135deg, ${primary}, ${secondary})`,
-                  color: '#fff',
-                  flexShrink: 0,
-                  gap: '1rem'
+                  color: '#fff'
                 }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '0.75rem',
-                    flex: 1,
-                    minWidth: 0
-                  }}>
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      background: 'rgba(255,255,255,0.2)',
-                      borderRadius: '10px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.3rem',
-                      flexShrink: 0
-                    }}>
-                      📄
-                    </div>
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      <h3 style={{ 
-                        margin: 0, 
-                        fontSize: '1rem', 
-                        fontWeight: 700,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
-                      }}>
-                        {selectedPdf.gaceta_titulo}
-                      </h3>
-                      <p style={{ 
-                        margin: 0, 
-                        fontSize: '0.75rem', 
-                        opacity: 0.9 
-                      }}>
-                        {selectedPdf.gaceta_tipo} • {formatearFecha(selectedPdf.gaceta_fecha)}
-                      </p>
-                    </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>
+                      {selectedPdf.gaceta_titulo}
+                    </h3>
+                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', opacity: 0.9 }}>
+                      {selectedPdf.gaceta_tipo} • {formatearFecha(selectedPdf.gaceta_fecha)}
+                    </p>
                   </div>
-                  <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <a
                       href={getPdfUrl(selectedPdf.gaceta_documento)}
                       target="_blank"
@@ -885,17 +587,10 @@ export default function GacetaPage() {
                         textDecoration: 'none',
                         borderRadius: '8px',
                         fontSize: '0.85rem',
-                        fontWeight: 600,
-                        transition: 'all 0.3s ease',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        border: '1px solid rgba(255,255,255,0.3)'
+                        fontWeight: 600
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
                     >
-                      🔗 Nueva pestaña
+                       Nueva pestaña
                     </a>
                     <a
                       href={getPdfUrl(selectedPdf.gaceta_documento)}
@@ -907,17 +602,10 @@ export default function GacetaPage() {
                         textDecoration: 'none',
                         borderRadius: '8px',
                         fontSize: '0.85rem',
-                        fontWeight: 600,
-                        transition: 'all 0.3s ease',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        border: '1px solid rgba(255,255,255,0.3)'
+                        fontWeight: 600
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
                     >
-                      ⬇️ Descargar
+                       Descargar
                     </a>
                     <button
                       onClick={() => setSelectedPdf(null)}
@@ -926,22 +614,10 @@ export default function GacetaPage() {
                         height: '40px',
                         borderRadius: '50%',
                         background: 'rgba(255,255,255,0.2)',
-                        border: '1px solid rgba(255,255,255,0.3)',
+                        border: 'none',
                         color: '#fff',
                         fontSize: '1.3rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#ef4444';
-                        e.currentTarget.style.transform = 'rotate(90deg)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-                        e.currentTarget.style.transform = 'rotate(0deg)';
+                        cursor: 'pointer'
                       }}
                     >
                       ✕
@@ -952,7 +628,7 @@ export default function GacetaPage() {
                 {/* Visor PDF */}
                 <div style={{ flex: 1, position: 'relative', background: '#525659' }}>
                   <iframe
-                    src={`${getPdfUrl(selectedPdf.gaceta_documento)}#toolbar=1&navpanes=1&scrollbar=1`}
+                    src={`${getPdfUrl(selectedPdf.gaceta_documento)}#toolbar=1&navpanes=1`}
                     title="Visor de PDF"
                     style={{
                       position: 'absolute',
